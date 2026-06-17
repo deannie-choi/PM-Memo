@@ -4,6 +4,7 @@ import { format, parseISO } from 'date-fns';
 import { CheckCircle, FileText, AlertCircle, Clock, AlertTriangle, Trash2, ChevronDown, ChevronRight, Folder } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useState } from 'react';
+import { RichTextEditor } from './RichTextEditor';
 
 export function Dashboard({ dataStore, setView }: { dataStore: ReturnType<typeof useData>, setView: (v: ViewState) => void }) {
   const { data } = dataStore;
@@ -220,33 +221,26 @@ function CompactMemoItem({ memo, dataStore, setView, colorTheme = "slate" }: any
 
         <div className="flex-1 min-w-0">
             {isEditing ? (
-                 <textarea
-                    autoFocus
-                    value={editContent}
-                    onChange={e => setEditContent(e.target.value)}
-                    onBlur={handleSave}
-                    onKeyDown={e => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSave();
-                        } else if (e.key === 'Escape') {
-                            setEditContent(memo.content);
-                            setIsEditing(false);
-                        }
-                    }}
-                    className="w-full text-sm text-slate-800 break-words mb-1 bg-white border border-indigo-300 rounded p-1.5 outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none min-h-[60px]"
-                 />
+                 <div className="mb-2">
+                    <RichTextEditor 
+                        value={editContent}
+                        onChange={setEditContent}
+                    />
+                    <div className="flex gap-2 justify-end mt-2">
+                        <button onClick={() => { setEditContent(memo.content); setIsEditing(false); }} className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded">취소</button>
+                        <button onClick={handleSave} className="px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded">저장</button>
+                    </div>
+                 </div>
             ) : (
                 <div 
                     className={cn(
-                        "text-sm text-slate-800 break-words mb-1 cursor-pointer hover:text-indigo-600 transition-colors",
-                        memo.isAcknowledged ? "line-through text-slate-500" : "font-medium"
+                        "text-sm text-slate-800 break-words mb-1 cursor-pointer hover:text-indigo-600 transition-colors tiptap-content",
+                        memo.isAcknowledged ? "opacity-70 grayscale" : ""
                     )}
                     onClick={() => !memo.isAcknowledged && setIsEditing(true)}
                     title="클릭하여 수정"
-                >
-                   {memo.content}
-                </div>
+                    dangerouslySetInnerHTML={{ __html: memo.content }}
+                />
             )}
             
             <div className="flex items-center text-xs text-slate-500 overflow-hidden whitespace-nowrap mt-2">
