@@ -5,9 +5,13 @@
 
 import { useState } from 'react';
 import { useData } from './hooks/useData';
+import { useAuth } from './hooks/useAuth';
+import { auth } from './lib/firebase';
+import { signOut } from 'firebase/auth';
 import { Dashboard } from './components/Dashboard';
 import { ClientWorkspace } from './components/ClientWorkspace';
-import { Building2, LayoutDashboard, Plus, Menu, X, Archive, Briefcase } from 'lucide-react';
+import { AuthScreen } from './components/AuthScreen';
+import { Building2, LayoutDashboard, Plus, Menu, X, Archive, Briefcase, LogOut } from 'lucide-react';
 import { cn } from './lib/utils';
 
 export type ViewState = 
@@ -16,11 +20,20 @@ export type ViewState =
   | { type: 'client', clientId: string, projectId?: string };
 
 export default function App() {
-  const dataStore = useData();
+  const { user, loading } = useAuth();
+  const dataStore = useData(user?.uid);
   const [view, setView] = useState<ViewState>({ type: 'dashboard' });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [newClientName, setNewClientName] = useState('');
   const [isAddingClient, setIsAddingClient] = useState(false);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50">로딩 중...</div>;
+  }
+
+  if (!user) {
+    return <AuthScreen />;
+  }
 
   const handleAddClient = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +41,10 @@ export default function App() {
     dataStore.addClient(newClientName.trim());
     setNewClientName('');
     setIsAddingClient(false);
+  };
+
+  const handleSignOut = () => {
+    signOut(auth);
   };
 
   return (
@@ -71,8 +88,8 @@ export default function App() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto w-full">
-          <div className="px-3 pt-4 pb-2">
+        <div className="flex-1 overflow-y-auto w-full flex flex-col">
+          <div className="px-3 pt-4 pb-2 flex-1">
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-3">고객사 (노트북)</div>
             <div className="space-y-1">
               {dataStore.data.clients.map(client => (
@@ -116,6 +133,16 @@ export default function App() {
                 </button>
               )}
             </div>
+          </div>
+          
+          {/* User profile / Logout */}
+          <div className="p-4 border-t border-slate-800 mt-auto">
+             <div className="flex items-center justify-between text-sm text-slate-400">
+               <span className="truncate max-w-[150px]">{user.email}</span>
+               <button onClick={handleSignOut} className="hover:text-white p-1 rounded transition-colors" title="로그아웃">
+                 <LogOut className="w-4 h-4" />
+               </button>
+             </div>
           </div>
         </div>
       </aside>

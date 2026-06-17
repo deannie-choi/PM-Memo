@@ -1,0 +1,28 @@
+{
+  "collections": [
+    {
+      "name": "clients",
+      "rules": [
+        "allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;",
+        "allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;"
+      ],
+      "indexes": []
+    },
+    {
+      "name": "projects",
+      "rules": [
+        "allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;",
+        "allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;"
+      ],
+      "indexes": []
+    },
+    {
+      "name": "memos",
+      "rules": [
+        "allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;",
+        "allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;"
+      ],
+      "indexes": []
+    }
+  ]
+}

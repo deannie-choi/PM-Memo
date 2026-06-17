@@ -1,5 +1,6 @@
 export interface Client {
   id: string;
+  userId: string;
   name: string;
   color?: string;
   createdAt: string;
@@ -7,6 +8,7 @@ export interface Client {
 
 export interface Project {
   id: string;
+  userId: string;
   clientId: string;
   name: string;
   color?: string;
@@ -17,6 +19,7 @@ export interface Project {
 
 export interface Memo {
   id: string;
+  userId: string;
   projectId: string;
   content: string;
   createdAt: string;
