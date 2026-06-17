@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { RichTextEditor } from './RichTextEditor';
 import { useData } from '../hooks/useData';
 import { ViewState } from '../App';
 import { Plus, Folder, Trash2, Calendar, Star, Building2, X, Image as ImageIcon } from 'lucide-react';
@@ -220,6 +221,8 @@ function ProjectContent({ project, dataStore, onDeleteProject, isInternal = fals
   const [editProjectName, setEditProjectName] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
   useEffect(() => {
     const handleGlobalPaste = (e: ClipboardEvent) => {
       const items = e.clipboardData?.items;
@@ -325,13 +328,11 @@ function ProjectContent({ project, dataStore, onDeleteProject, isInternal = fals
       )}
 
       {/* Input Area */}
-      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-10 focus-within:border-indigo-500 transition-colors">
-        <form onSubmit={handleAddMemo} className="flex flex-col gap-4">
-          <textarea
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-10 transition-colors overflow-hidden">
+        <form onSubmit={handleAddMemo} className="flex flex-col gap-4 p-5">
+          <RichTextEditor 
             value={newMemoContent}
-            onChange={e => setNewMemoContent(e.target.value)}
-            placeholder=""
-            className="w-full min-h-[100px] outline-none resize-y text-slate-800 placeholder:text-slate-400 text-base flex-1"
+            onChange={setNewMemoContent}
           />
           <div className="flex flex-col sm:flex-row justify-between items-center pt-3 border-t border-slate-100 gap-4">
             <div className="flex items-center gap-4 w-full sm:w-auto">

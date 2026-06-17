@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { RichTextEditor } from './RichTextEditor';
 import { format, parseISO, isPast, isToday } from 'date-fns';
 import { Clock, CheckCircle, Trash2, Edit2, X, Save, Star } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -61,13 +62,12 @@ export function MemoItem({
   if (isEditing) {
     return (
       <div className="bg-white p-5 rounded-xl border border-indigo-200 shadow-sm mb-4">
-        <textarea
-          className="w-full border border-slate-200 rounded-lg p-3 min-h-[100px] mb-3 text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-y text-sm"
-          value={editContent}
-          onChange={(e) => setEditContent(e.target.value)}
-          placeholder="내용을 입력하세요..."
-          autoFocus
-        />
+        <div className="mb-3">
+          <RichTextEditor 
+            value={editContent}
+            onChange={setEditContent}
+          />
+        </div>
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -184,7 +184,10 @@ export function MemoItem({
           </div>
         </div>
 
-        <p className="text-slate-800 text-base whitespace-pre-wrap leading-relaxed">{memo.content}</p>
+        <div 
+          className="text-slate-800 text-base leading-relaxed break-words tiptap-content select-text cursor-text"
+          dangerouslySetInnerHTML={{ __html: memo.content }} 
+        />
 
         {hasTarget && (
           <div
